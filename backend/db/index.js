@@ -1,8 +1,10 @@
-const mongoose=require('mongoose');
+import mongoose from "mongoose";
 
 //connnect to mongodb
 
 mongoose.connect('mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE');
+console.log("db connected");
+
 
 //define the schemas
 
@@ -37,10 +39,6 @@ const UserSchema=new mongoose.Schema({
 });
 
 //create the user model
-const User=mongoose.model('User',UserSchema);
+export const User=mongoose.model('User',UserSchema);
 
 
-//all export
-module.exports={
-    User
-};
