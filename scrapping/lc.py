@@ -1,0 +1,131 @@
+import time
+import traceback
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
+from webdriver_manager.chrome import ChromeDriverManager
+
+questionUrlList=[]
+questionNameList=[]
+cnt=0
+
+siteUrl='https://leetcode.com/problemset/'
+# Set up Chrome options
+def openBrowser(url):
+    print("    --------- Opening Browser")
+    try:
+        options = webdriver.ChromeOptions()
+        options.add_argument('--ignore-certificate-errors')
+        options.add_argument('--incognito')
+        # options.add_argument('--headless')  # Headless mode for no GUI
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+        # Initialize WebDriver
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        driver.get(url)
+        driver.maximize_window()
+        return driver
+    except Exception as e:
+        print(f"Error while opening the browser: {e}")
+        return None
+
+#close browser
+def closeBrowser(driver):
+    print("     --------> closing Browser")
+    driver.close()
+
+#fetch from the current page
+def fetchPageData(pageUrl):
+    print(pageUrl)
+    browser = openBrowser(pageUrl)
+    if not browser:
+        print("Browser initialization failed for", pageUrl)
+        return
+
+    try:
+        # Wait for the questions to load
+        WebDriverWait(browser, 20).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div[role='rowgroup'] div[role='row']"))
+        )
+        
+        # Fetch the page source after ensuring the content is loaded
+        pageSource = browser.page_source
+        
+        soup = BeautifulSoup(pageSource, 'html.parser')
+
+        print("\n\n------------------- Parsing data -------------------\n\n")
+        mainBlock = soup.find_all('div', role='rowgroup')
+        questionBlock = mainBlock[2]
+        if questionBlock:
+            print("------------------- Inside Question Block -------------------")
+            questionList = questionBlock.find_all('div', role='row')
+            print(f"Number of questions found: {len(questionList)}")
+
+            for question in questionList:
+                row = question.find_all('div', role='cell')
+                if len(row) > 1:  # Ensure valid row structure
+                    questionName = row[1].find('a').text
+                    questionUrl = row[1].find('a')['href']
+                    questionUrl = 'https://leetcode.com' + questionUrl
+
+                    # Debug print
+                    print(f"Extracted Question: {questionName}, URL: {questionUrl}")
+
+                    questionNameList.append(questionName)
+                    questionUrlList.append(questionUrl)
+        else:
+            print("Question block is empty. The page structure might have changed.")
+
+    except Exception as e:
+        print(f"Error while fetching data: {e}")
+    finally:
+        closeBrowser(browser)
+
+#get the problems pages and links from problemset page
+def getData():
+    try:
+        browser=openBrowser(siteUrl)
+        if browser is None:
+            raise Exception("Browser initialization failed.")
+        time.sleep(2)
+        pageSource=browser.page_source
+
+        WebDriverWait(browser,20).until(EC.title_contains("Problems - LeetCode"))
+        print(f"Page title: {browser.title}")
+        soup=BeautifulSoup(pageSource,'html.parser')
+        if(browser.title=="Problems - LeetCode"):
+            #fetch the problems from pages
+            totalPage=69
+            for page in range(1,totalPage+1):
+                print(
+                    f"\n\n------------------- Fetching Page {page} -------------------\n\n"
+                )
+                pageUrl=siteUrl+'?page='+str(page)
+                fetchPageData(pageUrl)
+            print("     -----------> Done all pages ")
+            # print(f"Total {questionNameList.__len__()} questions fetched")
+
+        else:
+            print("Connection Failed")
+            return
+
+    except Exception as e:
+        print("Some error occured, error: ", e)
+        print(traceback.format_exc())
+        return
+
+#generate the txt file of questin url and question name
+def getText():
+    print("     --------> generating the url txt file")
+    with open("leetcode_prob_url.txt","w+") as f:
+        f.write('\n'.join(questionUrlList))
+    with open("leetcode-_prob_titles.txt","w+") as f:
+        f.write('\n'.join(questionNameList))
+
+    
+if __name__=="__main__":
+    getData()
+    getText()
