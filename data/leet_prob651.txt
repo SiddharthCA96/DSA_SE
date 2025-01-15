@@ -1,0 +1,1 @@
+You have a function printNumber that can be called with an integer parameter and prints it to the console.

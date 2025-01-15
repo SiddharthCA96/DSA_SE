@@ -1,0 +1,1 @@
+You are given an integer array deck where deck[i] represents the number written on the ith card.
