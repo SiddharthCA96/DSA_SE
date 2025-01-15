@@ -1,1 +1,0 @@
-Given a string s, reverse the string according to the following rules:

@@ -1,1 +1,0 @@
-You are given an array of unique strings words where words[i] is six letters long. One word of words was chosen as a secret word.

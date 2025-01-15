@@ -1,1 +1,0 @@
-Design a stack that supports increment operations on its elements.

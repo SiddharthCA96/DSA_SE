@@ -1,1 +1,0 @@
-An array nums of length n is beautiful if:

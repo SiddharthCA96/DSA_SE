@@ -1,1 +1,0 @@
-You are given m arrays, where each array is sorted in ascending order.

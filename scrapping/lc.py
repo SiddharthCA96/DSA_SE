@@ -12,7 +12,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 questionUrlList=[]
 questionNameList=[]
 DATA_FOLDER="data"
-cnt=834
+cnt=1
 siteUrl='https://leetcode.com/problemset/'
 # Set up Chrome options
 def openBrowser(url):
@@ -69,10 +69,10 @@ def generateText(quesUrl):
             print("Layout row not found")
             return
         problem=layoutRow.text
-        problem_description=problem.split("\n")[0]
+        # problem_description=problem.split("\n")[0]
         file_path=os.path.join(DATA_FOLDER,f"leet_prob{cnt}.txt")
         with open(file_path,"w+",encoding="utf-8") as f:
-            f.write(problem_description)
+            f.write(problem)
         cnt+=1
     except Exception as e:
         print("Some error occurred in generateText. Error:", e)
@@ -142,7 +142,7 @@ def getData():
         soup=BeautifulSoup(pageSource,'html.parser')
         if(browser.title=="Problems - LeetCode"):
             #fetch the problems from pages
-            totalPage=30
+            totalPage=40
             for page in range(1,totalPage+1):
                 print(
                     f"\n\n------------------- Fetching Page {page} -------------------\n\n"

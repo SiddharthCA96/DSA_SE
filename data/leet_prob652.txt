@@ -1,1 +1,0 @@
-There are two kinds of threads: oxygen and hydrogen. Your goal is to group these threads to form water molecules.

@@ -1,1 +1,0 @@
-Given n orders, each order consists of a pickup and a delivery service.

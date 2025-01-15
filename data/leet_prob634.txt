@@ -1,1 +1,0 @@
-You are given n item's value and label as two integer arrays values and labels. You are also given two integers numWanted and useLimit.
