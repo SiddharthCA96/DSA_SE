@@ -41,6 +41,7 @@ for i in range(1, total_doc + 1):
     # Open and read the document
     with open(file_path, 'r', encoding='utf-8') as f:
         doc = f.read().lower()  # Read and convert the text to lowercase
+        print(doc)
         prob_des.append(doc)  # Store the document text
         
         # Clean and tokenize the document

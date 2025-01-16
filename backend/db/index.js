@@ -40,29 +40,52 @@ const UserSchema=new mongoose.Schema({
 
 //keyword schema
 const all_keywordsSchema=new mongoose.Schema({
-    keyword_values:String,
+    keyword_values:{
+        type:String,
+        required:true
+    }
 })
 
 //idf schema
 const idfSchema=new mongoose.Schema({
-    idf_values:String,
+    idf_values:{
+        type:String,
+    }
 })
 
 //tf-idf schema
 const tf_idfSchema=new mongoose.Schema({
-    tf_idf_values:String,
+    tf_idf_values:{
+        type:String,
+    }
 })
 //magnitude schema
 const magnitudeSchema=new mongoose.Schema({
-    mag_values:String,
+    mag_values:{
+        type:String,
+    }
 })
 //problem schema
 const problemSchema=mongoose.Schema({
-    problem_desc:String,
-    problem_url:String,
-    problem_title:String,
-    problem_id:Number,
-    problem_mag:Number
+    problem_desc:{
+        type:String,
+    },
+    problem_url:{
+        type:String,
+        required:true
+    },
+    problem_title:{
+        type:String,
+        required:true
+    },
+    problem_id:{
+        type:Number,
+        required:true
+    },
+    problem_mag:{
+        type:Number,
+        required:true
+    }
 })
 //create the  models
 

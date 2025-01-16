@@ -9,4 +9,5 @@
 - Now scrapping the problems
 - Scrapped the problems url and name from leetcode using selenium and bs4
 - Scrappe the description of problem 
-- Generate the tdf
+- Generate the tdf-idf matrix
+-  Save the data from local to mongodb
