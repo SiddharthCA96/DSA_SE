@@ -73,4 +73,4 @@ export const Db_Keyword=mongoose.model('Db_Keyword',all_keywordsSchema);
 export const idf=mongoose.model('idf',idfSchema);
 export const tf_idf=mongoose.model('tf_idf',tf_idfSchema);
 export const Db_mag=mongoose.model('Db_mag',magnitudeSchema);
-export const all_problem=mongoose.model('all_problem',all_problem);
+export const all_problem=mongoose.model('all_problem',problemSchema);
