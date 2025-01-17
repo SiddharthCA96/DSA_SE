@@ -11,3 +11,4 @@
 - Scrappe the description of problem 
 - Generate the tdf-idf matrix
 -  Save the data from local to mongodb
+- Now complete the home page where user will enter the query

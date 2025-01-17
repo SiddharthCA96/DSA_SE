@@ -29,6 +29,11 @@ export const Signin = () => {
           <Button onClick={async()=>{
             //now find the user and match the password and email
             try{
+              console.log("Sending data:",{
+                username,
+                password,
+              });
+              
                 const response=await axios.post("http://localhost:3000/api/auth/signin",{
                     username,
                     password,

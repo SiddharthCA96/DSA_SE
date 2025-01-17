@@ -1,10 +1,20 @@
-import React from 'react'
+import React from "react";
+import Header from "./Header";
+import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
-  return (
-    <div>
-      Home
-    </div>
-  )
-}
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/signin");
+  };
+
+  return (
+    <div className="absolute w-full">
+      <>
+        <Header onLogout={handleLogout} />
+      </>
+    </div>
+  );
+};
