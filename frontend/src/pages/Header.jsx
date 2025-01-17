@@ -1,9 +1,37 @@
 import React from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+const Header = () => {
+  const navigate = useNavigate();
+  //logout function
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/signin");
+  };
 
-const Header = ({ onLogout, onSearch }) => {
-  const handleSearchClick = () => {
+  //handlesearchclick function
+  const handleSearchClick = async () => {
     const searchInput = document.getElementById("search-input").value;
-    onSearch(searchInput); // Call the onSearch function with the input value
+    //call the route to get top 10 related questions from here
+    try {
+      console.log("Given query:", searchInput);
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/topResults",
+        {
+          searchInput,
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.error(
+        "top results fetch error:",
+        error.response?.data || error.message
+      );
+      alert(
+        "topresults fetch. Error: " +
+          (error.response?.data?.error || error.message)
+      );
+    }
   };
 
   return (
@@ -22,7 +50,7 @@ const Header = ({ onLogout, onSearch }) => {
         </button>
       </div>
       <button
-        onClick={onLogout}
+        onClick={handleLogout}
         className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg">
         Logout
       </button>

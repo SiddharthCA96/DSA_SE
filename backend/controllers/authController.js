@@ -4,6 +4,8 @@ import {User} from "../db/index.js"
 import jwt from "jsonwebtoken"
 import {JWT_SECRET} from "../config.js"
 
+console.log("inside authconroller");
+
 //get the body
 const signupBody = zod.object({
   username: zod.string().email(),
@@ -136,3 +138,4 @@ export const getUser = async (req, res) => {
     })),
   });
 };
+
