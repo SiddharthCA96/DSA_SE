@@ -20,7 +20,7 @@ from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 
 # Global variables
-prob_des = []  # Store document contents
+prob_des = [] 
 all_key_words = []  # Store all unique keywords
 total_doc = 2500  # Total number of documents
 nt = {}  # Dictionary to store the count of documents containing a given keyword
