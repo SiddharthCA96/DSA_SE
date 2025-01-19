@@ -4,8 +4,8 @@ const QuestionCard = ({ title, url, description }) => {
   console.log("Inside QuestionCard");
   console.log({ title, url, description });  // Log the props
 
-  // Extract the first line from the description
-  const firstLine = description.split("\n")[0];
+  // // Extract the first line from the description
+  // const firstLine = description.split("\n")[0];
 
   // Find the first occurrence of "Tags -" and slice till the end of the description
   const tagsIndex = description.indexOf("Tags -");
@@ -52,7 +52,7 @@ const QuestionCard = ({ title, url, description }) => {
 
   return (
     <div className="w-full bg-gray-800 text-white p-6 rounded-lg shadow-md mb-4">
-      <h1 className="text-lg font-semibold mb-2">{firstLine}</h1>
+      <h1 className="text-lg font-semibold mb-2">{title}</h1>
       <h2 className="text-sm mb-2">
         <a 
           href={url} 

@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { TOP_RESULTS } from "../../utils/constants";
 const Header = ({setSearchResults,setQueryFlag}) => {
   const navigate = useNavigate();
   //logout function
@@ -16,12 +17,11 @@ const Header = ({setSearchResults,setQueryFlag}) => {
     try {
       console.log("Given query:", searchInput);
       const response = await axios.post(
-        "http://localhost:3000/api/auth/topResults",
+        TOP_RESULTS,
         {
           searchInput,
         }
       );
-      console.log(typeof(response.data));
       setSearchResults(response.data);
       setQueryFlag(true);
     } catch (error) {

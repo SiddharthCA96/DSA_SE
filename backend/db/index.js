@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
+import { MONGO_URI } from "../utils/constants.js";
 
 //connnect to mongodb
 
-mongoose.connect('mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE1');
-console.log("db connected");
+mongoose
+  .connect(
+    MONGO_URI
+  )
+  .then(() => console.log("DB connected"))
+  .catch((err) => console.error("DB connection error:", err));
 
 
 //define the schema

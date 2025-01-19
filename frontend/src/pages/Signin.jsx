@@ -7,6 +7,7 @@ import { InputBox } from "../components/InputBox"
 import { SubHeading } from "../components/SubHeading"
 import axios from "axios"
 import { useState } from "react"
+import { SIGN_IN } from "../../utils/constants"
 
 
 
@@ -29,15 +30,11 @@ export const Signin = () => {
           <Button onClick={async()=>{
             //now find the user and match the password and email
             try{
-              console.log("Sending data:",{
-                username,
-                password,
-              });
-              
-                const response=await axios.post("http://localhost:3000/api/auth/signin",{
+                const response=await axios.post(SIGN_IN,{
                     username,
                     password,
                 })
+                localStorage.setItem("token", response.data.token);
                 navigate("/Home");
             }catch (error) {
                 console.error(

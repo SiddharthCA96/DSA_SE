@@ -6,6 +6,7 @@ import { InputBox } from "../components/InputBox";
 import { SubHeading } from "../components/SubHeading";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { SIGN_UP } from "../../utils/constants";
 
 export const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -52,14 +53,8 @@ export const Signup = () => {
             <Button
               onClick={async () => {
                 try {
-                //   console.log("Sending data:", {
-                //     username,
-                //     firstName,
-                //     lastName,
-                //     password,
-                //   });
                   const response = await axios.post(
-                    "http://localhost:3000/api/auth/signup",
+                    SIGN_UP,
                     {
                       username,
                       firstName,
@@ -67,7 +62,6 @@ export const Signup = () => {
                       password,
                     }
                   );
-                  //console.log("Response received:", response.data);
                   localStorage.setItem("token", response.data.token);
                   navigate("/home");
                 } catch (error) {
