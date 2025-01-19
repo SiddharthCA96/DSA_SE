@@ -8,6 +8,7 @@ import {
 } from "./backend/db/index.js";
 import fs from "fs/promises";
 import zlib from "zlib";
+import path from "path";
 
 //this will be used when to unzip data on retriving
 /*const compressed = await tf_idf.findOne();
@@ -15,7 +16,7 @@ const decompressed = zlib.gunzipSync(Buffer.from(compressed.tf_idf_values, 'base
 */
 mongoose
   .connect(
-    "mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE"
+    "mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE1"
   )
   .then(() => console.log("DB connected"))
   .catch((err) => console.error("DB connection error:", err));
@@ -73,9 +74,9 @@ async function processData() {
       .toString()
       .split("\n");
     const problem_desc = await Promise.all(
-      Array.from({ length: 1737 }, async (_, i) => {
+      Array.from({ length: 2500 }, async (_, i) => {
         try {
-          return await fs.readFile(`Corpus/leet_prob${i + 1}.txt`, "utf-8");
+          return await fs.readFile(`corpuscopy/prob${i + 1}.txt`, "utf-8");
         } catch (err) {
           console.error(
             `Error reading problem description for leet_prob${i + 1}:`,
@@ -85,6 +86,12 @@ async function processData() {
         }
       })
     );
+    // Read all problem descriptions
+
+
+
+    console.log(problem_desc.slice(0, 10));
+
     // console.log(all_keywds);
 
     //Save all keywords to the database
@@ -107,7 +114,7 @@ async function processData() {
     //return;
 
     // Calculate magnitudes and prepare problem data
-    for (let i = 0; i < 1737; i++) {
+    for (let i = 0; i < 2500; i++) {
       let value = 0;
       for (let j = 0; j < tot_keywds; j++) {
         const index = i * tot_keywds + j;
@@ -121,7 +128,7 @@ async function processData() {
 
       problems.push({
         problem_desc: problem_desc[i] || "Description not available",
-        problem_title: problem_titles[i] || "Title not available",
+        problem_title: problem_titles[i] || "Description not available",
         problem_url: problem_urls[i] || "URL not available",
         problem_mag: magnitude,
         problem_id: i + 1,

@@ -1,6 +1,6 @@
 import nltk
 import ssl
-import math
+import os
 import re
 from numpy import log10
 
@@ -22,9 +22,10 @@ stop_words = set(stopwords.words('english'))
 # Global variables
 prob_des = []  # Store document contents
 all_key_words = []  # Store all unique keywords
-total_doc = 1737  # Total number of documents
+total_doc = 2500  # Total number of documents
 nt = {}  # Dictionary to store the count of documents containing a given keyword
 tf_matrix = []  # List of lists to store term frequency values of each document
+folder_path='corpuscopy'
 
 # Function to clean and tokenize text
 def clean_and_tokenize(text):
@@ -36,7 +37,7 @@ def clean_and_tokenize(text):
 
 # Step 1: Process all documents and extract keywords
 for i in range(1, total_doc + 1):
-    file_path = f"Corpus/leet_prob{i}.txt"  # Path to each document
+    file_path = f"corpuscopy/prob{i}.txt"  # Path to each document
     
     # Open and read the document
     with open(file_path, 'r', encoding='utf-8') as f:

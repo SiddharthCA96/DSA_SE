@@ -6,7 +6,7 @@ import { removeStopwords } from "stopword";
 
 mongoose
   .connect(
-    "mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE"
+    "mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE1"
   )
   .then(() => console.log("DB connected"))
   .catch((err) => console.error("DB connection error:", err));
@@ -16,17 +16,17 @@ let all_keyword = [];
 let mag_docs = [];
 let idf_values = [];
 let tf_idf_matrix = [];
-var tot_doc = 1737;
+var tot_doc = 2500;
 let isDataLoaded = false; // Flag to check if data is loaded
 
-// Function to load data from MongoDB
-mongoose
-  .connect(
-    "mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE",
-    { useNewUrlParser: true, useUnifiedTopology: true, bufferTimeoutMS: 20000 }
-  )
-  .then(() => console.log("DB connected"))
-  .catch((err) => console.error("DB connection error:", err));
+// // Function to load data from MongoDB
+// mongoose
+//   .connect(
+//     "mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE",
+//     { useNewUrlParser: true, useUnifiedTopology: true, bufferTimeoutMS: 20000 }
+//   )
+//   .then(() => console.log("DB connected"))
+//   .catch((err) => console.error("DB connection error:", err));
 
 const loadData = async () => {
   try {

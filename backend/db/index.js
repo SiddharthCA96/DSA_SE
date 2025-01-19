@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 //connnect to mongodb
 
-mongoose.connect('mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE');
+mongoose.connect('mongodb+srv://ss6156852:ZCUwQ7HGO2u7IJjm@cluster0.sr1uz.mongodb.net/DSA_SE1');
 console.log("db connected");
 
 
-//define the schemas
+//define the schema
 
 //user schema
 const UserSchema=new mongoose.Schema({
