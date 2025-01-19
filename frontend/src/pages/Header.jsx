@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-const Header = () => {
+const Header = ({setSearchResults,setQueryFlag}) => {
   const navigate = useNavigate();
   //logout function
   const handleLogout = () => {
@@ -21,7 +21,9 @@ const Header = () => {
           searchInput,
         }
       );
-      console.log(response);
+      console.log(typeof(response.data));
+      setSearchResults(response.data);
+      setQueryFlag(true);
     } catch (error) {
       console.error(
         "top results fetch error:",
