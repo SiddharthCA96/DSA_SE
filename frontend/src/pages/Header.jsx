@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { TOP_RESULTS } from "../../utils/constants";
+const TOP_RESULTS="http://localhost:3000/api/auth/topResults";
 const Header = ({setSearchResults,setQueryFlag}) => {
   const navigate = useNavigate();
   //logout function

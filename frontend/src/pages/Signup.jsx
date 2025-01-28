@@ -6,7 +6,8 @@ import { InputBox } from "../components/InputBox";
 import { SubHeading } from "../components/SubHeading";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { SIGN_UP } from "../../utils/constants";
+
+const SIGN_UP="http://localhost:3000/api/auth/signup";
 
 export const Signup = () => {
   const [firstName, setFirstName] = useState("");

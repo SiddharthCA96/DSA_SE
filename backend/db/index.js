@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
-import { MONGO_URI } from "../utils/constants.js";
+import dotenv from "dotenv";
+dotenv.config();
+
+export const MONGO_URI = process.env.MONGO_URI;
+
 
 //connnect to mongodb
 

@@ -7,11 +7,12 @@ import { InputBox } from "../components/InputBox"
 import { SubHeading } from "../components/SubHeading"
 import axios from "axios"
 import { useState } from "react"
-import { SIGN_IN } from "../../utils/constants"
 
 
+const SIGN_IN="http://localhost:3000/api/auth/signin";
 
 export const Signin = () => {
+
     const[username,setUsername]=useState("");
     const[password,setPassword]=useState("");
     const navigate=useNavigate();
@@ -41,7 +42,7 @@ export const Signin = () => {
                   "Signin error:",
                   error.response?.data || error.message
                 );
-                alert("Signin failed. Error: " + (error.response?.data?.error || error.message));
+                // alert("Signin failed. Error: " + (error.response?.data?.error || error.message));
               }
           }} label={"Sign in"} />
           

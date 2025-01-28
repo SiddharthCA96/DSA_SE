@@ -3,7 +3,11 @@ import mongoose from "mongoose";
 import zlib from "zlib";
 import { tf_idf, idf, Db_Keyword, Db_mag, all_problem } from "../db/index.js";
 import { removeStopwords } from "stopword";
-import { MONGO_URI } from "../utils/constants.js";
+import dotenv from "dotenv";
+dotenv.config();
+
+export const MONGO_URI = process.env.MONGO_URI;
+
 
 mongoose
   .connect(
@@ -50,7 +54,7 @@ const loadData = async () => {
       console.error("No TF-IDF data found in MongoDB.");
       return null;
     }
-
+    
     // Decompress the Base64-encoded string
     const decompressedBuffer = zlib.gunzipSync(
       Buffer.from(compressed.tf_idf_values, "base64")
@@ -87,7 +91,7 @@ export const topResults = async (req, res) => {
 
   if (!isDataLoaded) {
     return res.status(500).json({
-      message: "Data is still being loaded. Please try again later.",
+      message: "500 error  .",
     });
   }
 
