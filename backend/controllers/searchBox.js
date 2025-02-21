@@ -1,77 +1,57 @@
-
 import mongoose from "mongoose";
 import zlib from "zlib";
 import { tf_idf, idf, Db_Keyword, Db_mag, all_problem } from "../db/index.js";
 import { removeStopwords } from "stopword";
 import dotenv from "dotenv";
+
 dotenv.config();
+const Mongo = process.env.MONGO_URI;
 
-export const MONGO_URI = process.env.MONGO_URI;
+mongoose.connect(Mongo, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch((err) => console.error('Connection error:', err));
 
-
-mongoose
-  .connect(
-    MONGO_URI
-  )
-  .then(() => console.log("DB connected"))
-  .catch((err) => console.error("DB connection error:", err));
-
-//variables
+// Variables
 let all_keyword = [];
 let mag_docs = [];
 let idf_values = [];
 let tf_idf_matrix = [];
+let all_problems_data = [];
+let cached_magDoc = null;
+let cached_idfDoc = null;
+let cached_keywordDoc = null;
+let cached_compressed = null;
 var tot_doc = 2500;
-let isDataLoaded = false; // Flag to check if data is loaded
+let isDataLoaded = false;
 
 const loadData = async () => {
   try {
-    const magDoc = await Db_mag.findOne();
-    if (!magDoc || !magDoc.mag_values) {
-      throw new Error("Missing or invalid mag_docs data");
-    }
-    mag_docs = magDoc.mag_values
-      .split(",")
-      .map((value) => parseFloat(value.trim()));
-    const idfDoc = await idf.findOne();
-    if (!idfDoc || !idfDoc.idf_values) {
-      throw new Error("Missing or invalid idf_values data");
-    }
-    idf_values = idfDoc.idf_values
-      .split("\n")
-      .map((value) => parseFloat(value.trim()));
+    cached_magDoc = cached_magDoc || await Db_mag.findOne();
+    if (!cached_magDoc || !cached_magDoc.mag_values) throw new Error("Missing or invalid mag_docs data");
+    mag_docs = cached_magDoc.mag_values.split(",").map((v) => parseFloat(v.trim()));
 
-    const keywordDoc = await Db_Keyword.findOne();
-    if (!keywordDoc || !keywordDoc.keyword_values) {
-      throw new Error("Missing or invalid keyword data");
-    }
-    all_keyword = keywordDoc.keyword_values
-      .split("\n")
-      .map((word) => word.trim());
+    cached_idfDoc = cached_idfDoc || await idf.findOne();
+    if (!cached_idfDoc || !cached_idfDoc.idf_values) throw new Error("Missing or invalid idf_values data");
+    idf_values = cached_idfDoc.idf_values.split("\n").map((v) => parseFloat(v.trim()));
 
-    const compressed = await tf_idf.findOne();
-    if (!compressed || !compressed.tf_idf_values) {
-      console.error("No TF-IDF data found in MongoDB.");
-      return null;
-    }
-    
-    // Decompress the Base64-encoded string
-    const decompressedBuffer = zlib.gunzipSync(
-      Buffer.from(compressed.tf_idf_values, "base64")
+    cached_keywordDoc = cached_keywordDoc || await Db_Keyword.findOne();
+    if (!cached_keywordDoc || !cached_keywordDoc.keyword_values) throw new Error("Missing or invalid keyword data");
+    all_keyword = cached_keywordDoc.keyword_values.split("\n").map((w) => w.trim());
+
+    cached_compressed = cached_compressed || await tf_idf.findOne();
+    if (!cached_compressed || !cached_compressed.tf_idf_values) throw new Error("No TF-IDF data found in MongoDB.");
+    const decompressedBuffer = zlib.gunzipSync(Buffer.from(cached_compressed.tf_idf_values, "base64"));
+    tf_idf_matrix = decompressedBuffer.toString("utf-8").split("\n").map((row) =>
+      row.split(",").map((value) => parseFloat(value.trim()) || 0)
     );
 
-    // Convert the decompressed string back to a 2D array
-    tf_idf_matrix = decompressedBuffer
-      .toString("utf-8")
-      .split("\n")
-      .map((row) =>
-        row.split(",").map((value) => {
-          const num = parseFloat(value.trim());
-          return isNaN(num) ? 0 : num; // Replace NaN with 0
-        })
-      ); // Convert each value to a numbe
+    all_problems_data = all_problems_data.length ? all_problems_data : await all_problem.find();
 
     isDataLoaded = true;
+    console.log("All data loaded and cached successfully.");
   } catch (error) {
     console.error("Error loading data:", error);
   }
@@ -80,133 +60,54 @@ const loadData = async () => {
 (async () => {
   try {
     await loadData();
-
   } catch (error) {
     console.error("Initialization error:", error);
   }
 })();
 
-//fcn to get top results
-export const topResults = async (req, res) => {
-
-  if (!isDataLoaded) {
-    return res.status(500).json({
-      message: "500 error  .",
-    });
-  }
-
-  const query_string = req.body.searchInput
-    .toLowerCase()
-    .replace(/(\r\n|\n|\r)/gm, "");
-  const query_keywords = removeStopwords(query_string.split(" ")).sort();
-
-  var mp_query = new Map();
-  query_keywords.forEach((ele) => {
-    if (mp_query.has(ele)) {
-      mp_query.set(ele, mp_query.get(ele) + 1);
-    } else {
-      mp_query.set(ele, 1);
-    }
-  });
-
-  //create the tf array of query
-  var sz_query_keywords = query_keywords.length;
-  var tf_query = [];
-
-  all_keyword.forEach((ele) => {
-    if (mp_query.has(ele)) {
-      console.log(ele);
-
-      tf_query.push(mp_query.get(ele) / sz_query_keywords);
-      console.log(mp_query.get(ele) / sz_query_keywords);
-    } else {
-      tf_query.push(0);
-    }
-  });
-
-  //create tf_idf of query
-  var tf_idf_query = [];
-  for (var i = 0; i < idf_values.length; i++) {
-    tf_idf_query.push(tf_query[i] * idf_values[i]);
-    if (tf_query[i] * idf_values[i]) {
-      console.log(tf_query[i] * idf_values[i]);
-    }
-  }
-
-  var tf_idf_doc = [];
-  for (var i = 0; i < tot_doc; i++) {
-    var values = [];
-    for (var j = 0; j < all_keyword.length; j++) {
-      let tf_idf_value = tf_idf_matrix[i] ? tf_idf_matrix[i][j] : undefined; 
-      if (tf_idf_value === undefined || isNaN(tf_idf_value)) {
-        values.push(0); 
-      } else {
-        values.push(tf_idf_value); 
-      }
-    }
-    tf_idf_doc.push(values);
-  }
-
-
-  //calculate the magnitude of query vector
-  var mag_query = 0;
-  for (var i = 0; i < idf_values.length; i++) {
-    if (tf_idf_query[i] > 0) {
-      mag_query += tf_idf_query[i] * tf_idf_query[i];
-    }
-  }
-  mag_query = Math.sqrt(mag_query);
-
-
-  //calculate selectivity
-
-  var selectivity_values = new Map();
-  for (var i = 0; i < tot_doc; i++) {
-    var val = 0;
-    for (var j = 0; j < all_keyword.length; j++) {
-      if (!isNaN(tf_idf_query[j])) {
-        val += tf_idf_doc[i][j] * tf_idf_query[j];
-      }
-    }
-
-    // Check for zero magnitude before normalizing
-    if (mag_docs[i] === 0 || mag_query === 0) {
-      continue; // Skip this document to avoid division by zero
-    }
-
-    // Normalize by document magnitude
-    val = val / mag_docs[i];
-    // Normalize by query magnitude
-    val = val / mag_query;
-
-    if (!isNaN(val) && val !== 0) {
-      selectivity_values.set(val, i + 1); // Si, doc no.
-    } else {
-      // console.log(`Skipping document ${i} due to NaN value.`);
-    }
-  }
-
-  // Sort by similarity score (not by key), in descending order
-  var selectivity_order = new Map(
-    [...selectivity_values.entries()].sort((a, b) => b[0] - a[0]) // Sort numerically by similarity score
-  );
-
-  // Collect the document IDs (problem_ids) from the sorted map
-  var doc_order = [];
-  selectivity_order.forEach((key, value) => {
-    doc_order.push(key); 
-  });
-
-  var data = [];
-  for (var i = 0; i < Math.min(5, doc_order.length); i++) {
-    let queryDocId = (doc_order[i]);
-    let dbData = await all_problem.find({ problem_id: queryDocId });
-    if (dbData && dbData.length > 0) {
-      data.push(dbData[0]);
-    } else {
-      console.log(`No data found for doc_id ${queryDocId}`);
-    }
-  }
-  // Send the response
-  res.json({ data });
+export const checkDataStatus = (req, res) => {
+  res.json({ isDataLoaded });
 };
+
+export const fetchData = (req, res) => {
+  if (!isDataLoaded) {
+    return res.status(503).json({ message: "Data is still loading. Please try again later." });
+  }
+
+  res.json({
+    all_keyword,
+    mag_docs,
+    idf_values,
+    tf_idf_matrix,
+    all_problems_data
+  });
+};
+
+// export const topResults = async (req, res) => {
+//   const { query_keywords } = req.body;
+
+//   const mp_query = new Map();
+//   query_keywords.forEach((ele) => mp_query.set(ele, (mp_query.get(ele) || 0) + 1));
+
+//   const sz_query_keywords = query_keywords.length;
+//   const tf_query = all_keyword.map((ele) => (mp_query.get(ele) || 0) / sz_query_keywords);
+
+//   const tf_idf_query = tf_query.map((tf, i) => tf * idf_values[i]);
+
+//   const mag_query = Math.sqrt(tf_idf_query.reduce((sum, val) => sum + val * val, 0));
+
+//   const selectivity_values = new Map();
+//   for (let i = 0; i < tot_doc; i++) {
+//     let val = tf_idf_query.reduce((sum, q, j) => sum + (tf_idf_matrix[i][j] || 0) * q, 0);
+//     if (mag_docs[i] !== 0 && mag_query !== 0) {
+//       val /= (mag_docs[i] * mag_query);
+//       if (!isNaN(val) && val !== 0) selectivity_values.set(val, i + 1);
+//     }
+//   }
+
+//   const sortedDocs = [...selectivity_values.entries()].sort((a, b) => b[0] - a[0]).slice(0, 5);
+
+//   const data = sortedDocs.map(([_, docId]) => all_problems_data.find(p => p.problem_id === docId)).filter(Boolean);
+
+//   res.json({ data });
+// };

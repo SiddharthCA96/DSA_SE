@@ -6,8 +6,7 @@ import { InputBox } from "../components/InputBox";
 import { SubHeading } from "../components/SubHeading";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const SIGN_UP="http://localhost:3000/api/auth/signup";
+import { SIGN_UP } from "../../utils/constants";
 
 export const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -44,6 +43,7 @@ export const Signup = () => {
             label={"Email"}
           />
           <InputBox
+            type="password"
             onChange={(e) => {
               setPassword(e.target.value);
             }}
